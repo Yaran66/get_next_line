@@ -6,7 +6,7 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:51:35 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/17 14:19:26 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/11/17 17:45:54 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -22,6 +22,21 @@ char	*ft_strnew(size_t size)
 		str[size] = '\0';
 	return (str);
 }
+
+char	*ft_strcpy(char *dest, char *src)
+{
+	int i;
+
+	i = 0;
+	while (src[i] != '\0')
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
 
 char	*ft_strchr(const char *s, int c)
 {

@@ -1,4 +1,4 @@
-We encourage you to create test programs for your project even though this work HHH
+We encourage you to create test programs for your project even though this work
 won’t have to be submitted and won’t be graded. It will give you a chance
 to easily test your work and your peers’ work. You will find those tests especially
 useful during your defence. Indeed, during defence, you are free to use your tests
