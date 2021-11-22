@@ -6,18 +6,15 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:46:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/20 14:02:20 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/11/22 21:13:16 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 #include <stdio.h>
-#include<fcntl.h>
+#include<fcntl.h> //open
 
-
-
-
-
-char	*check_remain(char *remain, char **line)
+char	*check_remain(char *remain, char **line) // **line чтобы все что
+// происходило с ней в check_remain изменяло оригинал.
 {
 	char	*eol_ptr;
 	char	*tmp;
@@ -35,11 +32,15 @@ char	*check_remain(char *remain, char **line)
 			*eol_ptr = '\0';
 			*line = ft_strdup(tmp);
 			free(tmp);
+			tmp = NULL;
 		}
 		else
 		{
 			*line = ft_strdup(remain);
-			free(remain);
+			//remain[0] = '\0';
+			//free(remain);
+			remain[0] = '\0';
+			//printf("%s\n", *line);
 		}
 	}
 	else
@@ -53,31 +54,45 @@ char	*check_remain(char *remain, char **line)
 
 char	*get_next_line(int fd)
 {
-	char		*line;
+	char		*line; // строка которую возвращаем
 	char	buf[BUFFER_SIZE + 1];
-	int			byte_was_read;
-	char		*eol_ptr;
-	static char *remain;
+	int			byte_read; // сколько read вернул, чтобы поставть 0 в конце
+	// прочитанного куска, который потом с помощью strjoin срастить, а также
+	// получить 0 если читать нечего
+	char		*eol_ptr; // указатель на \n ловим каретку
+	static char *remain; // остаток от прочитанного, в зависимости от
+	// величины буфера
 
-	eol_ptr = check_remain(remain, &line);
+	eol_ptr = check_remain(remain, &line); // функция которая проверяет есть
+	// ли остаток. если остаток есть, она вернет указатель, если нет то
+	// вернет 0, также она зануляет line и eol_ptr при первом проходе.
 
 
-	while (!eol_ptr && (byte_was_read = read(fd, buf, BUFFER_SIZE)))
+	while (!eol_ptr && (byte_read = read(fd, buf, BUFFER_SIZE))) // если
+		// eol_ptr == 0 и есть что читать входим.
 	{
-		buf[byte_was_read] = '\0';
-		if ((eol_ptr = ft_strchr(buf, '\n')))
+		buf[byte_read] = '\0';
+		if ((eol_ptr = ft_strchr(buf, '\n'))) // проверяем нет ли каретки
 		{
-			eol_ptr++;
-			remain = ft_strdup(eol_ptr);
+			eol_ptr++; // проходим за каретку
+			remain = ft_strdup(eol_ptr); // записываем все что прочитали
+			// после каретки в remain
 			//printf("remain: ""%s\n", remain);
-			*eol_ptr = '\0';
+			*eol_ptr = '\0';//зануляем следующий символ после каретки, чтобы
+			// strjoin записав каретку в новую line остановился
 		}
 
-		line = ft_strjoin(line, buf);
+		line = ft_strjoin(line, buf); // сращиваем то чем наполнли line , с
+		// тем что прочитали в buf
 	}
 	//printf("%s\n", line);
-	if (ft_strlen(line) == 0)
+	if (!line && !byte_read && !remain) // вот тут хочу
+		// выводить 0, то есть когда line уже ноль, читать нечего, остаток
+		// тоже ноль.
+	{
+		printf("null");
 		return(NULL);
+	}
 	return(line);
 
 }
@@ -86,12 +101,12 @@ int main()
 {
 	int		fd;
 	char *line;
-	while(line)
-	{
-		line = get_next_line(fd);
-		printf("%s", line);
-	}
-	/*fd = open("text.txt", O_RDONLY);
+//	while((line = get_next_line(fd)))
+//	{
+//		printf("%s", line);
+//	}
+	fd = open("text.txt", O_RDONLY);
+	printf("%d\n", fd);
 	line = get_next_line(fd);
 	printf("%s", line);
 	line = get_next_line(fd);
@@ -105,6 +120,8 @@ int main()
 	line = get_next_line(fd);
 	printf("%s", line);
 	line = get_next_line(fd);
+	printf("%s", line);
+	/*line = get_next_line(fd);
 	printf("%s", line);
 	line = get_next_line(fd);
 	printf("%s", line);*/
