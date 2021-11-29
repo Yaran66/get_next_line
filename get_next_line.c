@@ -6,30 +6,37 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:46:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/26 14:54:01 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/11/29 19:08:08 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
+#include <stdio.h>
+#include <fcntl.h>
+
+char	*cut_remain_if_n(char **remain, char *eol_ptr, char **line)
+{
+	char	*tmp;
+
+	tmp = ft_strdup(*remain);
+	eol_ptr = ft_strchr(tmp, '\n');
+	eol_ptr++;
+	*remain = ft_strcpy(*remain, eol_ptr);
+	*eol_ptr = '\0';
+	*line = ft_strdup(tmp);
+	free(tmp);
+	tmp = NULL;
+	return (eol_ptr);
+}
 
 char	*check_remain(char *remain, char **line)
 {
 	char	*eol_ptr;
-	char	*tmp;
 
 	eol_ptr = NULL;
 	if (remain != NULL)
 	{
 		if (ft_strchr(remain, '\n'))
-		{
-			tmp = ft_strdup(remain);
-			eol_ptr = ft_strchr(tmp, '\n');
-			eol_ptr++;
-			remain = ft_strcpy(remain, eol_ptr);
-			*eol_ptr = '\0';
-			*line = ft_strdup(tmp);
-			free(tmp);
-			tmp = NULL;
-		}
+			eol_ptr = cut_remain_if_n (&remain, eol_ptr, line);
 		else
 		{
 			*line = ft_strdup(remain);
@@ -37,19 +44,31 @@ char	*check_remain(char *remain, char **line)
 		}
 	}
 	else
-		*line = ft_strnew(1);
+	{
+		if (!(*line =(char *)malloc(sizeof(char) * (1))))
+			return(0);
+		*line[0] = '\0';
+	}
 	return (eol_ptr);
 }
 
-char	*ft_strjoin_with_free(char *s1, char *s2)
+char	*ft_strjoin_with_free(char *line, char *buf, char **remain)
 {
 	char	*tmp;
+	char	*eol_ptr;
 
-	tmp = s1;
-	s1 = ft_strjoin(s1, s2);
+	tmp = line;
+	if (ft_strchr(buf, '\n'))
+	{
+		eol_ptr = ft_strchr(buf, '\n');
+		eol_ptr++;
+		*remain = ft_strdup(eol_ptr);
+		*eol_ptr = '\0';
+	}
+	line = ft_strjoin(line, buf);
 	if (tmp)
 		free(tmp);
-	return (s1);
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -62,26 +81,41 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE < 1 || fd > 256 || (read(fd, buf, 0) != 0))
 		return (NULL);
-	if (!(eol_ptr = check_remain(remain, &line)))
+	eol_ptr = check_remain(remain, &line);
+	if (!eol_ptr)
 	{
 		free(remain);
 		remain = NULL;
 	}
-	while (!eol_ptr && (byte_read = read(fd, buf, BUFFER_SIZE)))
+	byte_read = 1;
+	while (!eol_ptr && byte_read)
 	{
+		byte_read = read(fd, buf, BUFFER_SIZE);
+		if (byte_read == -1)
+			return (0);
 		buf[byte_read] = '\0';
-		if ((eol_ptr = ft_strchr(buf, '\n')))
-		{
-			eol_ptr++;
-			remain = ft_strdup(eol_ptr);
-			*eol_ptr = '\0';
-		}
-		line = ft_strjoin_with_free(line, buf);
+		eol_ptr = ft_strchr(buf, '\n');
+		line = ft_strjoin_with_free(line, buf, &remain);
 	}
 	if (!ft_strlen(line) && !byte_read && !ft_strlen(remain))
 	{
 		free(line);
-		return (NULL);
+		line = NULL;
 	}
 	return (line);
 }
+
+/*int main()
+{
+	int		fd;
+	char *line;
+
+	fd = open("text.txt", O_RDONLY);
+	printf("%d\n", fd);
+	while((line = get_next_line(fd)))
+	{
+		printf("%s", line);
+	}
+	close(fd);
+	return 0;
+}*/
