@@ -1,14 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/15 13:46:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/26 14:54:01 by wjasmine         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+//
+// Created by Aleksey Tvorogov on 26.11.2021.
+//
 #include "get_next_line.h"
 
 char	*check_remain(char *remain, char **line)
@@ -60,7 +52,7 @@ char	*get_next_line(int fd)
 	char		*eol_ptr;
 	static char	*remain;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || fd > 256 || (read(fd, buf, 0) != 0))
+	if (fd < 0 || BUFFER_SIZE < 1 || fd > 256)
 		return (NULL);
 	if (!(eol_ptr = check_remain(remain, &line)))
 	{
@@ -85,3 +77,4 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
+
