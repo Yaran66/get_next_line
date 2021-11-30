@@ -6,14 +6,14 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:46:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/29 19:08:08 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/11/30 19:42:44 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 #include <stdio.h>
 #include <fcntl.h>
 
-char	*cut_remain_if_n(char **remain, char *eol_ptr, char **line)
+static	char	*cut_remain_if_n(char **remain, char *eol_ptr, char **line)
 {
 	char	*tmp;
 
@@ -28,7 +28,7 @@ char	*cut_remain_if_n(char **remain, char *eol_ptr, char **line)
 	return (eol_ptr);
 }
 
-char	*check_remain(char *remain, char **line)
+static	char	*check_remain(char *remain, char **line)
 {
 	char	*eol_ptr;
 
@@ -45,14 +45,15 @@ char	*check_remain(char *remain, char **line)
 	}
 	else
 	{
-		if (!(*line =(char *)malloc(sizeof(char) * (1))))
-			return(0);
+		*line = (char *)malloc(sizeof(char) * (1));
+		if (!*line)
+			return (0);
 		*line[0] = '\0';
 	}
 	return (eol_ptr);
 }
 
-char	*ft_strjoin_with_free(char *line, char *buf, char **remain)
+static	char	*ft_strjoin_with_free(char *line, char *buf, char **remain)
 {
 	char	*tmp;
 	char	*eol_ptr;
@@ -71,7 +72,13 @@ char	*ft_strjoin_with_free(char *line, char *buf, char **remain)
 	return (line);
 }
 
-char	*get_next_line(int fd)
+static	void	free_null(char **str)
+{
+	free(*str);
+	*str = NULL;
+}
+
+static	char	*get_next_line(int fd)
 {
 	char		*line;
 	char		buf[BUFFER_SIZE + 1];
@@ -79,14 +86,11 @@ char	*get_next_line(int fd)
 	char		*eol_ptr;
 	static char	*remain;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || fd > 256 || (read(fd, buf, 0) != 0))
+	if (fd < 0 || BUFFER_SIZE < 1 || fd > 10240  || (read(fd, buf, 0) != 0))
 		return (NULL);
 	eol_ptr = check_remain(remain, &line);
 	if (!eol_ptr)
-	{
-		free(remain);
-		remain = NULL;
-	}
+		free_null(&remain);
 	byte_read = 1;
 	while (!eol_ptr && byte_read)
 	{
@@ -98,14 +102,11 @@ char	*get_next_line(int fd)
 		line = ft_strjoin_with_free(line, buf, &remain);
 	}
 	if (!ft_strlen(line) && !byte_read && !ft_strlen(remain))
-	{
-		free(line);
-		line = NULL;
-	}
+		free_null(&line);
 	return (line);
 }
 
-/*int main()
+int main()
 {
 	int		fd;
 	char *line;
@@ -115,7 +116,8 @@ char	*get_next_line(int fd)
 	while((line = get_next_line(fd)))
 	{
 		printf("%s", line);
+		free(line);
 	}
 	close(fd);
 	return 0;
-}*/
+}

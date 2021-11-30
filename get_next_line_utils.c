@@ -6,39 +6,14 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:51:35 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/25 14:56:12 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/11/30 15:27:16 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-/*void		ft_strclr(char *s)
-{
-	size_t	i;
-
-	i = 0;
-	if (s != NULL)
-		while (s[i])
-		{
-			s[i] = '\0';
-			++i;
-		}
-}*/
-
-char	*ft_strnew(size_t size)
-{
-	char	*str;
-
-	if (!(str = (char *)malloc(sizeof(char) * size + 1)))
-		return (NULL);
-	str[size] = '\0';
-	while (size--)
-		str[size] = '\0';
-	return (str);
-}
-
 char	*ft_strcpy(char *dest, char *src)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (src[i] != '\0')
@@ -75,8 +50,8 @@ size_t	ft_strlen(const char *str)
 	size_t	i;
 
 	i = 0;
-	if(!str)
-		return(0);
+	if (!str)
+		return (0);
 	while (str[i])
 	{
 		i++;
