@@ -1,15 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/15 13:46:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/12/01 15:53:31 by wjasmine         ###   ########.fr       */
+/*   Created: 2021/12/01 09:40:04 by wjasmine          #+#    #+#             */
+/*   Updated: 2021/12/01 15:34:35 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static	char	*cut_remain_if_n(char **remain, char *eol_ptr, char **line)
 {
@@ -82,13 +82,13 @@ char	*get_next_line(int fd)
 	char		buf[BUFFER_SIZE + 1];
 	int			byte_read;
 	char		*eol_ptr;
-	static char	*remain;
+	static char	*remain[FD_MAX_MAC];
 
 	if (fd < 0 || BUFFER_SIZE < 1 || fd > 10240 || (read(fd, buf, 0) != 0))
 		return (NULL);
-	eol_ptr = check_remain(remain, &line);
+	eol_ptr = check_remain(remain[fd], &line);
 	if (!eol_ptr)
-		free_null(&remain);
+		free_null(&remain[fd]);
 	byte_read = 1;
 	while (!eol_ptr && byte_read)
 	{
@@ -97,9 +97,9 @@ char	*get_next_line(int fd)
 			return (0);
 		buf[byte_read] = '\0';
 		eol_ptr = ft_strchr(buf, '\n');
-		line = ft_strjoin_with_free(line, buf, &remain);
+		line = ft_strjoin_with_free(line, buf, &remain[fd]);
 	}
-	if (!ft_strlen(line) && !byte_read && !ft_strlen(remain))
+	if (!ft_strlen(line) && !byte_read && !ft_strlen(remain[fd]))
 		free_null(&line);
 	return (line);
 }

@@ -6,11 +6,11 @@
 /*   By: wjasmine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 13:48:52 by wjasmine          #+#    #+#             */
-/*   Updated: 2021/11/30 19:43:36 by wjasmine         ###   ########.fr       */
+/*   Updated: 2021/12/01 10:25:08 by wjasmine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -26,5 +26,7 @@ size_t	ft_strlen(const char *str);
 char	*ft_strdup(const char *s1);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strcpy(char *dest, char *src);
+
+# define FD_MAX_MAC 10240
 
 #endif
