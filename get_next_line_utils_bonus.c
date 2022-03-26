@@ -45,17 +45,13 @@ char	*ft_strchr(const char *s, int c)
 	return (0);
 }
 
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen(const char *ch)
 {
 	size_t	i;
 
 	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
-	{
-		i++;
-	}
+	while (ch && ch[i] != '\0')
+		++i;
 	return (i);
 }
 
